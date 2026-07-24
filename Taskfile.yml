@@ -7,8 +7,11 @@ tasks:
   run-lb:
     - go run ./cmd/lb
 
+  run-be:
+    - go run ./cmd/be
+
   run-curl:
-    - curl http://127.0.0.1/
+    - curl http://127.0.0.1/ --output -
 
   lint:
     - golangci-lint fmt
