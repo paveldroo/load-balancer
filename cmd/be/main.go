@@ -17,10 +17,22 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Accept: %s\n", r.Header.Get("Accept"))
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello From Backend Server\n")
+		fmt.Fprintf(w, "Hello From Backend Server running at: %s\n", r.Host)
 
 		fmt.Fprintf(os.Stdout, "\nReplied with a hello message\n\n")
 	})
 
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	ch := make(chan int)
+
+	go func() {
+		log.Fatal(http.ListenAndServe(":8081", nil))
+	}()
+	go func() {
+		log.Fatal(http.ListenAndServe(":8082", nil))
+	}()
+	go func() {
+		log.Fatal(http.ListenAndServe(":8083", nil))
+	}()
+
+	<-ch
 }

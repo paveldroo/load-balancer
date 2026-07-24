@@ -9,6 +9,16 @@ import (
 	"strings"
 )
 
+type Config struct {
+	backends []string
+	lastIdx  int
+}
+
+var cfg = Config{
+	backends: []string{"http://localhost:8081", "http://localhost:8082", "http://localhost:8083"},
+	lastIdx:  0,
+}
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(os.Stdout, "Received request from %s\n", strings.Split(r.RemoteAddr, ":")[0])
@@ -17,9 +27,9 @@ func main() {
 		fmt.Fprintf(os.Stdout, "User-Agent: %s\n", r.UserAgent())
 		fmt.Fprintf(os.Stdout, "Accept: %s\n", r.Header.Get("Accept"))
 
-		resp, err := http.Get("http://localhost:8081")
+		resp, err := http.Get(backend())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error making request to backend: %s", err.Error())
+			fmt.Fprintf(os.Stderr, "error making request to backend: %s", err)
 		}
 
 		fmt.Fprintf(os.Stdout, "\nResponse from server: %s %s\n", resp.Proto, resp.Status)
@@ -35,4 +45,15 @@ func main() {
 	})
 
 	log.Fatal(http.ListenAndServe(":80", nil))
+}
+
+func backend() string {
+	if cfg.lastIdx > len(cfg.backends)-1 {
+		cfg.lastIdx = 0
+	}
+
+	b := cfg.backends[cfg.lastIdx]
+	cfg.lastIdx++
+
+	return b
 }
