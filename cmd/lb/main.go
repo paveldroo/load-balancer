@@ -106,21 +106,18 @@ func heartbeat(cfg *Config) {
 
 			for range t {
 				resp, err := http.Get(host)
-				defer resp.Body.Close()
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "requesting host %s, error: %s\n", host, err)
 					statuses.Store(hostIdx, false)
+					resp.Body.Close()
 
 					continue
 				}
 
-				if resp.StatusCode != http.StatusOK {
-					statuses.Store(hostIdx, false)
-
-					continue
-				}
+				statuses.Store(hostIdx, resp.StatusCode != http.StatusOK)
 
 				statuses.Store(hostIdx, true)
+				resp.Body.Close()
 			}
 		}(i, cfg.statuses, host)
 	}

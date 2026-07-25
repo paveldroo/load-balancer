@@ -89,6 +89,9 @@ linters:
       - source: '^//go:generate '
         linters:
           - lll
+      - text: 'net/http.Get must not be called'
+        linters:
+          - noctx
       - path: _test\.go
         linters:
           - exhaustruct
