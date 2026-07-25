@@ -5,10 +5,16 @@ tasks:
     - go run ./main.go -f1 -d, tests/testdata/fourchords.csv | head -n5
 
   run-lb:
-    - go run ./cmd/lb
+    - go run ./cmd/lb 10
 
-  run-be:
-    - go run ./cmd/be
+  run-be1:
+    - go run ./cmd/be 8081
+
+  run-be2:
+    - go run ./cmd/be 8082
+
+  run-be3:
+    - go run ./cmd/be 8083
 
   run-curl:
     - curl http://127.0.0.1/ --output -

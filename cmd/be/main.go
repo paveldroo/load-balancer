@@ -9,6 +9,13 @@ import (
 )
 
 func main() {
+	args := os.Args[1:]
+	if len(args) < 1 {
+		fmt.Fprint(os.Stderr, "you must specify port for backend service")
+		os.Exit(1)
+	}
+	port := ":" + args[0]
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(os.Stdout, "Received request from %s\n", strings.Split(r.RemoteAddr, ":")[0])
 		fmt.Fprintf(os.Stdout, "%s %s %s\n", r.Method, r.URL, r.Proto)
@@ -17,22 +24,10 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Accept: %s\n", r.Header.Get("Accept"))
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Hello From Backend Server running at: %s\n", r.Host)
+		fmt.Fprintf(w, "Hello From Backend Server running at: %s\n", r.Host) //nolint:gosec
 
-		fmt.Fprintf(os.Stdout, "\nReplied with a hello message\n\n")
+		fmt.Fprint(os.Stdout, "\nReplied with a hello message\n\n")
 	})
 
-	ch := make(chan int)
-
-	go func() {
-		log.Fatal(http.ListenAndServe(":8081", nil))
-	}()
-	go func() {
-		log.Fatal(http.ListenAndServe(":8082", nil))
-	}()
-	go func() {
-		log.Fatal(http.ListenAndServe(":8083", nil))
-	}()
-
-	<-ch
+	log.Fatal(http.ListenAndServe(port, nil)) //nolint:gosec
 }
