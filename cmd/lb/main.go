@@ -109,7 +109,6 @@ func heartbeat(cfg *Config) {
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "requesting host %s, error: %s\n", host, err)
 					statuses.Store(hostIdx, false)
-					resp.Body.Close()
 
 					continue
 				}
